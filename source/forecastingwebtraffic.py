@@ -147,3 +147,8 @@ mc = ModelCheckpoint('best_model.hdf5', monitor='val_loss', verbose=1, save_best
 
 history=model.fit(x_tr, y_tr ,epochs=30, batch_size=32, validation_data=(x_val,y_val), callbacks=[mc])
 
+model.load_weights('best_model.hdf5')
+
+mse = model.evaluate(x_val,y_val)
+print("Mean Square Error:",mse)
+
