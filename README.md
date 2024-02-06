@@ -58,9 +58,6 @@ This project is structured as a Jupyter notebook which guides you through:
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## Authors
-
-* **Your Name** - *Initial work*
 
 ## License
 
