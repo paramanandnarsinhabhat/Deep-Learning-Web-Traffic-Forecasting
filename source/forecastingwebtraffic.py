@@ -149,6 +149,78 @@ history=model.fit(x_tr, y_tr ,epochs=30, batch_size=32, validation_data=(x_val,y
 
 model.load_weights('best_model.hdf5')
 
+## Comparision with the baseline model
+#build a simple model
+def compute_moving_average(data):
+  pred=[]
+  for i in data:
+    avg=np.sum(i)/len(i)
+    pred.append(avg)
+  return np.array(pred)
+
+x_reshaped = x_val.reshape(-1,168)
+y_pred = compute_moving_average(x_reshaped)
+
+mse = np.sum ( (y_val - y_pred) **2 ) / (len(y_val))
+print(mse)
+
+'''
+## Forecasting
+
+**Steps to Follow**:
+
+1. Intialize the array, say "data" with a weeks data
+2. Predict for the next hour
+3. Append the predicted value as the last element of array "data"
+4. Skip the first element of array "data"
+5. Repeat steps 2 to 4 for **N** iterations
+
+Define a function which forecasts the traffic for the next hours from the previous week data.
+'''
+
+
 mse = model.evaluate(x_val,y_val)
 print("Mean Square Error:",mse)
+
+
+def forecast(x_val, no_of_pred, ind):
+  predictions=[]
+
+  #intialize the array with previous weeks data  
+  temp=x_val[ind]
+
+  for i in range(no_of_pred): 
+
+    #predict for the next hour
+    pred=model.predict(temp.reshape(1,-1,1))[0][0]
+    
+    #append the prediction as the last element of array
+    temp = np.insert(temp,len(temp),pred)
+    predictions.append(pred)
+
+    #ignore the first element of array
+    temp = temp[1:]
+
+  return predictions
+
+no_of_pred =24
+ind=72
+y_pred= forecast(x_val,no_of_pred,ind)
+
+y_true = y_val[ind:ind+(no_of_pred)]
+
+y_true= y_scaler.inverse_transform(y_true)
+y_pred= y_scaler.inverse_transform(y_pred)
+
+def plot(y_true,y_pred):
+  ar = np.arange(len(y_true))
+  plt.figure(figsize=(22,10))
+  plt.plot(ar, y_true,'r')
+  plt.plot(ar, y_pred,'y')
+  plt.show()
+
+plot(y_true,y_pred)
+
+
+
 
